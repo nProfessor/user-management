@@ -1,5 +1,6 @@
 {
 	"name": "webvimark/module-user-management",
+	'version': "1.0.5",
 	"description": "User with improved RBAC",
 	"autoload": {
 		"psr-4": {
