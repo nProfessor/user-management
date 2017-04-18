@@ -71,10 +71,12 @@ class GhostAccessControl extends ActionFilter
 			Yii::$app->getResponse()->redirect(Yii::$app->getHomeUrl());
 		}
 
+
 		if ( User::canRoute($route) )
 		{
 			return true;
 		}
+
 
 		if ( isset($this->denyCallback) )
 		{

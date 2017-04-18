@@ -158,23 +158,34 @@ class Route extends AbstractItem
 	 */
 	public static function isRouteAllowed($route, $allowedRoutes)
 	{
-		if ( in_array($route, $allowedRoutes) )
+        $allowedRoutesTMP = $allowedRoutes;
+
+        foreach ($allowedRoutesTMP as &$allowedRoute) {
+            if(Yii::$app->id != 'admin' && preg_match('#^/', $allowedRoute)) $allowedRoute = '@admin'.$allowedRoute;
+            
+            $allowedRoute = preg_replace('#^@'.Yii::$app->id.'#', '', $allowedRoute);
+	    } unset($allowedRoute);
+
+		if (in_array($route, $allowedRoutesTMP)  )
 		{
 			return true;
 		}
 
-		foreach ($allowedRoutes as $allowedRoute)
+		foreach ($allowedRoutesTMP as $allowedRoute)
 		{
-			// If some controller fully allowed (wildcard)
+		    if($allowedRoute === '/*') return true;
+		        // If some controller fully allowed (wildcard)
 			if (substr($allowedRoute, -1) == '*')
 			{
+
 				$routeArray = explode('/', $route);
 				array_splice($routeArray, -1);
 
 				$allowedRouteArray = explode('/', $allowedRoute);
+
 				array_splice($allowedRouteArray, -1);
 
-				if (array_diff($routeArray, $allowedRouteArray) === array())
+				if (array_diff($routeArray, $allowedRouteArray) === [])
 					return true;
 			}
 		}

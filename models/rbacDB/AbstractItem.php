@@ -98,7 +98,7 @@ abstract class AbstractItem extends ActiveRecord
 			}
 			catch (\Exception $e)
 			{
-				if ( $throwException )
+				if ($throwException )
 				{
 					throw $e;
 				}

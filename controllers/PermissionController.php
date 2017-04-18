@@ -46,6 +46,7 @@ class PermissionController extends AdminDefaultController
 			$permissionsByGroup[@$permission->group->name][] = $permission;
 		}
 
+
 		$childRoutes = AuthHelper::getChildrenByType($item->name, AbstractItem::TYPE_ROUTE);
 		$childPermissions = AuthHelper::getChildrenByType($item->name, AbstractItem::TYPE_PERMISSION);
 
@@ -90,14 +91,21 @@ class PermissionController extends AdminDefaultController
 		$item = $this->findModel($id);
 
 		$newRoutes = Yii::$app->request->post('child_routes', []);
+		$childRoutesRemove = Yii::$app->request->post('child_routes_remove', []);
 
 		$oldRoutes = array_keys(AuthHelper::getChildrenByType($item->name, AbstractItem::TYPE_ROUTE));
 
-		$toAdd = array_diff($newRoutes, $oldRoutes);
-		$toRemove = array_diff($oldRoutes, $newRoutes);
+		$toAdd = array_filter(array_diff($newRoutes, $oldRoutes));
+		$toRemove = array_filter(array_diff($oldRoutes, $newRoutes));
 
-		Permission::addChildren($id, $toAdd);
-		Permission::removeChildren($id, $toRemove);
+
+        foreach ($toAdd as $addItem) {
+            Route::create($addItem);
+		}
+
+        if($childRoutesRemove) Permission::removeChildren($id, $childRoutesRemove);
+        if($toAdd) Permission::addChildren($id, $toAdd);
+
 
 		if ( ( $toAdd OR $toRemove ) AND ( $id == Yii::$app->getModule('user-management')->commonPermissionName ) )
 		{
